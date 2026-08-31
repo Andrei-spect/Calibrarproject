@@ -222,9 +222,6 @@ function Index() {
             </span>
           </div>
           <nav className="flex items-center gap-5 font-body text-sm text-glacier/80">
-            <a href="#problema" className="hidden lg:inline hover:text-white">
-              O problema
-            </a>
             <a href="#solucao" className="hidden lg:inline hover:text-white">
               A checagem
             </a>
@@ -317,34 +314,6 @@ function Index() {
                 </ul>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="problema" className="bg-mist">
-        <div className="mx-auto max-w-6xl px-5 py-16 lg:py-20">
-          <div className="mb-10 max-w-2xl">
-            <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-brand/60">O problema</p>
-            <h2 className="mt-3 font-display text-3xl font-semibold tracking-tight text-ink text-balance max-w-[40ch]">
-              Tempo perdido entre o prescritor e a bancada.
-            </h2>
-            <p className="mt-4 font-body text-base leading-relaxed text-ink/70 text-pretty">
-              Fórmula enviada incompleta ou incompatível. O farmacêutico para, liga, espera. A produção — e o paciente —
-              pagam esse atraso.
-            </p>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-3">
-            {[
-              ["Ponto de dor 01", "Retrabalho", "O prescritor revisa a receita de novo só para completar um campo que faltava."],
-              ["Ponto de dor 02", "Ligação", "O farmacêutico interrompe a produção para questionar base ou ativo não permitido."],
-              ["Ponto de dor 03", "Atraso", "Cada ida e volta empurra a entrega — e a confiança do paciente — para depois."],
-            ].map(([tag, titulo, texto]) => (
-              <div key={titulo} className="rounded-[min(1.25vw,14px)] bg-white/60 p-5 ring-1 ring-black/5">
-                <span className="font-mono text-[10px] uppercase tracking-wider text-urgentdeep">{tag}</span>
-                <h3 className="mt-2 font-display text-xl font-semibold text-ink">{titulo}</h3>
-                <p className="mt-2 font-body text-sm leading-relaxed text-ink/65">{texto}</p>
-              </div>
-            ))}
           </div>
         </div>
       </section>
