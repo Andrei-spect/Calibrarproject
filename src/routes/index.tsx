@@ -225,9 +225,6 @@ function Index() {
             <a href="#solucao" className="hidden lg:inline hover:text-white">
               A checagem
             </a>
-            <a href="#beneficio" className="hidden lg:inline hover:text-white">
-              Quem se beneficia
-            </a>
             <a
               href="#prescricao"
               className="rounded-[min(1vw,8px)] bg-bio/15 px-3 py-1.5 font-medium text-glare ring-1 ring-bio/30"
@@ -248,11 +245,22 @@ function Index() {
                 <span className="size-1.5 rounded-full bg-bio" /> Ferramenta de conferência pré-envio
               </p>
               <h1 className="font-display text-4xl font-semibold leading-[1.02] tracking-tight text-white text-balance sm:text-5xl lg:text-6xl lg:max-w-[20ch]">
-                A balança que <span className="text-glare">confere</span> a fórmula antes de ela virar retrabalho.
+                Ativus Pharma
               </h1>
               <p className="mt-6 max-w-[52ch] font-body text-base leading-relaxed text-glacier/85 text-pretty">
-                O prescritor preenche a prescrição em campos obrigatórios. Antes de chegar ao farmacêutico, o Calibrar
-                pesa cada ativo, base e concentração — e só libera o envio quando tudo equilibra.
+                Fundada em 2022, por Natália Freddo junto com seus sócios, Andrei Milani e Ester Milani, é uma rede de
+                farmácias de manipulação brasileira localizada na cidade de Sarandi, Rio Grande do Sul.
+              </p>
+              <p className="mt-5 max-w-[54ch] font-body text-base leading-relaxed text-glacier/85 text-pretty">
+                "A Ativus Pharma nasceu do desejo de entregar mais do que produtos manipulados, nós queremos entregar
+                qualidade, bem-estar e cuidado aos nossos clientes. Das cápsulas ao uso tópico, da saúde à estética, do
+                tratamento à suplementação. A Ativus produz linhas completas para todas as fases e momentos da vida.
+                Atendendo do paciente ao profissional da saúde e da beleza"
+              </p>
+              <p className="mt-5 max-w-[54ch] font-body text-base leading-relaxed text-glacier/85 text-pretty">
+                Agora, com a nossa mais nova tecnologia, o PrescribeCheck: mais qualidade para o prescritor, mais
+                agilidade para o farmacêutico e, acima de tudo, mais segurança para o paciente. Prescreva com
+                confiança. Experimente o PrescribeCheck.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <a
@@ -260,14 +268,7 @@ function Index() {
                   className="rounded-[min(1vw,10px)] bg-bio py-2 pr-3 pl-4 text-sm font-semibold text-abyss ring-1 ring-bio/40 transition-transform hover:-translate-y-0.5"
                 >
                   <span className="mr-2 inline-block size-4 shrink-0 leading-none">⚖</span>
-                  Conferir uma prescrição
-                </a>
-                <a
-                  href="#solucao"
-                  className="rounded-[min(1vw,10px)] py-2 pr-3 pl-4 text-sm font-medium text-glacier/90 ring-1 ring-white/15 transition-transform hover:-translate-y-0.5"
-                >
-                  <span className="mr-1 inline-block size-4 shrink-0 leading-none">→</span>
-                  Como a checagem funciona
+                  Prescreva agora
                 </a>
               </div>
               <dl className="mt-10 grid max-w-md grid-cols-3 gap-4 border-t border-white/10 pt-6">
@@ -386,30 +387,6 @@ function Index() {
                 Nada é liberado com a balança fora do zero. O motivo de cada alerta aparece na hora.
               </p>
             </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="beneficio" className="bg-glacier/70">
-        <div className="mx-auto max-w-6xl px-5 py-16 lg:py-20">
-          <div className="mb-10 max-w-2xl">
-            <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-brand/60">Quem se beneficia</p>
-            <h2 className="mt-3 font-display text-3xl font-semibold tracking-tight text-ink text-balance max-w-[44ch]">
-              Uma conferência certa, três pessoas em dia.
-            </h2>
-          </div>
-          <div className="grid gap-4 md:grid-cols-3">
-            {[
-              ["Prescritor", "Revisa na hora", "Vê o alerta antes de enviar e ajusta o campo sem esperar resposta da farmácia."],
-              ["Farmacêutico", "Segurança na bancada", "Recebe uma fórmula já conferida, sem interromper a produção para questionar."],
-              ["Paciente", "Produto certo, no prazo", "Menos risco de formulação errada e menos espera para receber o seu."],
-            ].map(([tag, titulo, texto]) => (
-              <div key={tag} className="rounded-[min(1.25vw,14px)] bg-white/70 p-5 ring-1 ring-black/5">
-                <span className="font-mono text-[10px] uppercase tracking-wider text-brand">{tag}</span>
-                <h3 className="mt-2 font-display text-lg font-semibold text-ink">{titulo}</h3>
-                <p className="mt-2 font-body text-sm leading-relaxed text-ink/65">{texto}</p>
-              </div>
-            ))}
           </div>
         </div>
       </section>
