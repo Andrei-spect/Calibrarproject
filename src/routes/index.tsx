@@ -258,9 +258,9 @@ function Index() {
                 Atendendo do paciente ao profissional da saúde e da beleza"
               </p>
               <p className="mt-5 max-w-[54ch] font-body text-base leading-relaxed text-glacier/85 text-pretty">
-                Agora, com a nossa mais nova tecnologia, o PrescribeCheck: mais qualidade para o prescritor, mais
+                Agora, com a nossa mais nova tecnologia, o Calibrar: mais qualidade para o prescritor, mais
                 agilidade para o farmacêutico e, acima de tudo, mais segurança para o paciente. Prescreva com
-                confiança. Experimente o PrescribeCheck.
+                confiança. Experimente o Calibrar.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <a
