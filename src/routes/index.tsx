@@ -44,7 +44,7 @@ type Campos = {
 
 const inicial: Campos = {
   prescritor: "Dra. Marina Alencar",
-  conselho: "CRM-SP 148.220",
+  conselho: "CRBM-SP 148.220",
   paciente: "João Pedro Sanches, 34",
   enderecoPaciente: "Rua das Acácias, 210 · São Paulo/SP",
   modoUso: "Tópico",
