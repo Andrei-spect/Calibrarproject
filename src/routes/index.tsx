@@ -23,16 +23,15 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
+type Ativo = { id: string; nome: string; conc: string };
+
 type Campos = {
   prescritor: string;
   conselho: string;
   paciente: string;
   enderecoPaciente: string;
   modoUso: string;
-  ativo1: string;
-  conc1: string;
-  ativo2: string;
-  conc2: string;
+  ativos: Ativo[];
   base: string;
   quantidade: string;
   posologia: string;
@@ -44,14 +43,14 @@ type Campos = {
 
 const inicial: Campos = {
   prescritor: "Dra. Marina Alencar",
-  conselho: "CRBM-SP 148.220",
+  conselho: "CRM-SP 148.220",
   paciente: "João Pedro Sanches, 34",
   enderecoPaciente: "Rua das Acácias, 210 · São Paulo/SP",
   modoUso: "Tópico",
-  ativo1: "Vitamina C",
-  conc1: "10%",
-  ativo2: "Triptofano",
-  conc2: "10%",
+  ativos: [
+    { id: "a1", nome: "Vitamina C", conc: "10%" },
+    { id: "a2", nome: "Syn-Coll", conc: "10%" },
+  ],
   base: "Gel",
   quantidade: "30 g",
   posologia: "2× ao dia, pela manhã e à noite",
@@ -63,14 +62,12 @@ const inicial: Campos = {
 
 type Alerta = { campo: keyof Campos | "formula"; nivel: "urgente" | "atencao"; titulo: string; motivo: string };
 
-const obrigatorios: { campo: keyof Campos; rotulo: string }[] = [
+const obrigatorios: { campo: Exclude<keyof Campos, "ativos">; rotulo: string }[] = [
   { campo: "prescritor", rotulo: "Prescritor" },
   { campo: "conselho", rotulo: "Conselho de classe" },
   { campo: "paciente", rotulo: "Paciente" },
   { campo: "enderecoPaciente", rotulo: "Endereço do paciente" },
   { campo: "modoUso", rotulo: "Modo de uso" },
-  { campo: "ativo1", rotulo: "Princípio ativo" },
-  { campo: "conc1", rotulo: "Concentração do ativo" },
   { campo: "base", rotulo: "Base / veículo" },
   { campo: "quantidade", rotulo: "Quantidade total" },
   { campo: "posologia", rotulo: "Posologia" },
@@ -79,11 +76,13 @@ const obrigatorios: { campo: keyof Campos; rotulo: string }[] = [
   { campo: "email", rotulo: "E-mail da clínica" },
 ];
 
+const LIMITE_SYNCOLL = 5;
+
 const num = (v: string) => parseFloat(v.replace(",", ".").replace(/[^0-9.]/g, ""));
 
 function conferir(c: Campos): Alerta[] {
   const alertas: Alerta[] = [];
-  const ativos = [c.ativo1, c.ativo2].map((a) => a.trim().toLowerCase());
+  const nomesAtivos = c.ativos.map((a) => a.nome.trim().toLowerCase());
   const base = c.base.trim().toLowerCase();
 
   for (const { campo, rotulo } of obrigatorios) {
@@ -106,17 +105,39 @@ function conferir(c: Campos): Alerta[] {
     });
   }
 
-  if (ativos.includes("vitamina c") && ativos.includes("triptofano")) {
+  if (!c.ativos[0]?.nome.trim()) {
     alertas.push({
       campo: "formula",
       nivel: "urgente",
-      titulo: "Incompatibilidade: Vitamina C + Triptofano",
-      motivo: "Ambos são ácidos; juntos instabilizam a base de gel. Remova um ativo ou troque a base para solução.",
+      titulo: "Campo obrigatório em branco: Princípio ativo",
+      motivo: "A farmácia não recebe a prescrição sem esta informação. Preencha para liberar o envio.",
+    });
+  }
+  if (!c.ativos[0]?.conc.trim()) {
+    alertas.push({
+      campo: "formula",
+      nivel: "urgente",
+      titulo: "Campo obrigatório em branco: Concentração do ativo",
+      motivo: "A farmácia não recebe a prescrição sem esta informação. Preencha para liberar o envio.",
     });
   }
 
-  if (ativos.includes("niacinamida") && base.includes("gel")) {
-    const conc = ativos[0] === "niacinamida" ? num(c.conc1) : num(c.conc2);
+  for (const a of c.ativos) {
+    if (a.nome.trim().toLowerCase() === "syn-coll") {
+      const v = num(a.conc);
+      if (!Number.isNaN(v) && v > LIMITE_SYNCOLL) {
+        alertas.push({
+          campo: "formula",
+          nivel: "urgente",
+          titulo: "Concentração incompatível: Syn-Coll",
+          motivo: `A concentração de ${a.conc} está muito alta. O uso recomendado de Syn-Coll costuma ficar entre 3% e ${LIMITE_SYNCOLL}%.`,
+        });
+      }
+    }
+  }
+
+  if (nomesAtivos.includes("niacinamida") && base.includes("gel")) {
+    const conc = num(c.ativos.find((a) => a.nome.trim().toLowerCase() === "niacinamida")?.conc ?? "");
     if (!Number.isNaN(conc) && conc > 10) {
       alertas.push({
         campo: "formula",
@@ -127,7 +148,7 @@ function conferir(c: Campos): Alerta[] {
     }
   }
 
-  if (ativos.includes("retinol") && base.includes("álcool")) {
+  if (nomesAtivos.includes("retinol") && base.includes("álcool")) {
     alertas.push({
       campo: "formula",
       nivel: "urgente",
@@ -136,18 +157,13 @@ function conferir(c: Campos): Alerta[] {
     });
   }
 
-  const pares: { ativo: string; conc: string }[] = [
-    { ativo: c.ativo1, conc: c.conc1 },
-    { ativo: c.ativo2, conc: c.conc2 },
-  ];
-  for (const { ativo, conc } of pares) {
+  for (const { nome, conc } of c.ativos) {
     const v = num(conc);
-    if (ativo.trim() && conc.trim() && (Number.isNaN(v) || v <= 0 || v > 100)) {
-
+    if (nome.trim() && conc.trim() && (Number.isNaN(v) || v <= 0 || v > 100)) {
       alertas.push({
         campo: "formula",
         nivel: "urgente",
-        titulo: `Concentração inválida em ${ativo}`,
+        titulo: `Concentração inválida em ${nome}`,
         motivo: "Informe um percentual entre 0% e 100%, seguindo a DBC.",
       });
     }
@@ -199,13 +215,29 @@ function Index() {
   const [c, setC] = useState<Campos>(inicial);
   const [enviado, setEnviado] = useState(false);
   const alertas = useMemo(() => conferir(c), [c]);
-  const set = (k: keyof Campos) => (v: string) => {
+  const set = (k: Exclude<keyof Campos, "ativos">) => (v: string) => {
     setEnviado(false);
     setC((p) => ({ ...p, [k]: v }));
   };
+  const setAtivo = (id: string, campo: "nome" | "conc") => (v: string) => {
+    setEnviado(false);
+    setC((p) => ({ ...p, ativos: p.ativos.map((a) => (a.id === id ? { ...a, [campo]: v } : a)) }));
+  };
+  const adicionarAtivo = () => {
+    setEnviado(false);
+    setC((p) => ({ ...p, ativos: [...p.ativos, { id: `a${Date.now()}`, nome: "", conc: "" }] }));
+  };
+  const removerAtivo = (id: string) => {
+    setEnviado(false);
+    setC((p) => ({ ...p, ativos: p.ativos.filter((a) => a.id !== id) }));
+  };
   const erroDe = (k: keyof Campos) => alertas.find((a) => a.campo === k)?.motivo;
   const liberado = alertas.length === 0;
-  const preenchidos = obrigatorios.filter((o) => c[o.campo].trim()).length;
+  const preenchidos =
+    obrigatorios.filter((o) => c[o.campo].trim()).length +
+    (c.ativos[0]?.nome.trim() ? 1 : 0) +
+    (c.ativos[0]?.conc.trim() ? 1 : 0);
+  const totalObrigatorios = obrigatorios.length + 2;
   const desvio = (alertas.filter((a) => a.nivel === "urgente").length * 1.6 +
     alertas.filter((a) => a.nivel === "atencao").length * 0.8)
     .toFixed(2)
@@ -476,11 +508,42 @@ function Index() {
                       ))}
 
                     <div className="rounded-[min(1vw,10px)] bg-white p-4 ring-1 ring-black/10">
-                      <div className="grid gap-3 sm:grid-cols-2">
-                        <Campo rotulo="Princípio ativo 1" obrigatorio valor={c.ativo1} onChange={set("ativo1")} />
-                        <Campo rotulo="Concentração" obrigatorio mono valor={c.conc1} onChange={set("conc1")} />
-                        <Campo rotulo="Princípio ativo 2" valor={c.ativo2} onChange={set("ativo2")} />
-                        <Campo rotulo="Concentração" mono valor={c.conc2} onChange={set("conc2")} />
+                      <div className="space-y-3">
+                        {c.ativos.map((a, i) => (
+                          <div key={a.id} className="grid gap-3 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
+                            <Campo
+                              rotulo={`Princípio ativo ${i + 1}`}
+                              obrigatorio={i === 0}
+                              valor={a.nome}
+                              onChange={setAtivo(a.id, "nome")}
+                            />
+                            <Campo
+                              rotulo="Concentração"
+                              obrigatorio={i === 0}
+                              mono
+                              valor={a.conc}
+                              onChange={setAtivo(a.id, "conc")}
+                            />
+                            {c.ativos.length > 1 ? (
+                              <button
+                                type="button"
+                                onClick={() => removerAtivo(a.id)}
+                                className="h-fit rounded-lg px-2.5 py-2.5 font-body text-xs font-medium text-urgentdeep ring-1 ring-urgent/25 hover:bg-urgent/5 sm:mb-0.5"
+                              >
+                                Remover
+                              </button>
+                            ) : null}
+                          </div>
+                        ))}
+                        <button
+                          type="button"
+                          onClick={adicionarAtivo}
+                          className="rounded-lg px-3 py-2 font-body text-sm font-medium text-brand ring-1 ring-brand/25 hover:bg-brand/5"
+                        >
+                          + Adicionar princípio ativo
+                        </button>
+                      </div>
+                      <div className="mt-4 grid gap-3 sm:grid-cols-2">
                         <Campo rotulo="Base / veículo" obrigatorio valor={c.base} onChange={set("base")} erro={erroDe("base")} />
                         <Campo rotulo="Quantidade total" obrigatorio mono valor={c.quantidade} onChange={set("quantidade")} erro={erroDe("quantidade")} />
                         <Campo rotulo="Posologia" obrigatorio valor={c.posologia} onChange={set("posologia")} erro={erroDe("posologia")} />
@@ -534,7 +597,7 @@ function Index() {
 
                 <div className="rounded-[min(1.25vw,14px)] bg-white p-4 ring-1 ring-black/5">
                   <p className="font-mono text-[10px] uppercase tracking-wider text-ink/50">
-                    Alertas ativos · {preenchidos}/{obrigatorios.length} campos obrigatórios
+                    Alertas ativos · {preenchidos}/{totalObrigatorios} campos obrigatórios
                   </p>
                   <ul className="mt-3 space-y-2.5 font-body text-sm">
                     {alertas.length === 0 ? (
